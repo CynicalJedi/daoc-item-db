@@ -21,6 +21,10 @@ function lookupMeta(item) {
     return item_string
 }
 
+function showRawJSON(item) {
+	$('#item').html('<h3>'+item.name + '</h3>'+JSON.stringify(item, null, "<p/>")); //This dumps the raw json
+}
+
 //TODO -- This is NOT finished, more needs to be parsed and included from the JSON object
 //Returns an HTML table representing the item
 function prettyPrint(item) {
