@@ -159,7 +159,7 @@ $(document).ready(function(){
   var expression = new RegExp(searchField, "i");
 
    $.each(lookup, function(key, value){
-    if (value.name.search(expression) != -1)
+    if (value.name.search(expression) != -1 || value.id == searchField)
     {
      $('#result').append('<li><span>'+value.id+' | ' +value.name+' | ' + metadata.realm[value.realm] + '</span></li>');
 	 //save.push(value);
