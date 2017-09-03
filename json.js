@@ -1,4 +1,5 @@
 var metadata;
+var currItem;
 var mdjson= $.getJSON( "db/DAOC Item DB Metadata.json", function(data) {
   metadata = Object.assign(data);
   console.log("metadata success");
@@ -7,6 +8,37 @@ var mdjson= $.getJSON( "db/DAOC Item DB Metadata.json", function(data) {
 console.log(metadata);
 console.log("test");
 
+
+//Checks status of radio buttons and determines what display type to use
+function customDisplay(item) {
+ // $('#item').html(
+  var d = $('input[name=display]:checked', '#displayOptions').val();
+  if (d == "json"){
+    showRawJSON(item)
+  }
+  else if (d == "text") {
+    showCustomText(item)
+  }
+  else {
+    showGameDelve(item)
+  }
+}
+
+//Show the display as the JSON from the db
+function showRawJSON(item) {
+	$('#item').html('<h3>'+item.name + '</h3>'+JSON.stringify(item, null, "<p/>")); //This dumps the raw json
+}
+
+//Show the display as a custom text version
+function showCustomText(item) {
+  $('#item').html('<h3>'+item.name + '</h3>'+ prettyPrint(item).replace(/(?:\r\n|\r|\n)/g, '<br/>'));
+}
+
+//Show the in-game delve of the item
+function showGameDelve(item) {
+  $('#item').html('<h3>'+item.name + '</h3>'+ item.delve_text.replace(/(?:\r\n|\r|\n)/g, '<br/>'));
+  }
+  
 //Matches the metadata fields to a human readable string
 function lookupMeta(item) {
   $.getJSON('db/DAOC Item DB Metadata.json', function(data) {
@@ -19,10 +51,6 @@ function lookupMeta(item) {
  
   
     return item_string
-}
-
-function showRawJSON(item) {
-	$('#item').html('<h3>'+item.name + '</h3>'+JSON.stringify(item, null, "<p/>")); //This dumps the raw json
 }
 
 //TODO -- This is NOT finished, more needs to be parsed and included from the JSON object
@@ -86,13 +114,16 @@ function prettyPrint(item) {
         //console.log(metadata.bonus_types[type]);
         //console.log(metadata.bonus_types[type].sub_types[id]);
         //metadata.bonus_types[1].sub_types[0]
-        if (type == 28) {
+        if (type == 28 && id >= 0){
         var s = metadata.bonus_types[type].id[id];
         console.log(s);
         }
-        else {
+        else if (id >= 0 ) {
         var s = metadata.bonus_types[type].sub_types[id];
         console.log(s);
+        }
+        else {
+          var s = "unknown"
         }
         item_string = item_string + "\n" + metadata.bonus_types[type].name +":" + s + ":" + val; 
       });  
@@ -139,12 +170,20 @@ $(document).ready(function(){
  }, ms);
 });
  
+$('#displayOptions input').on('change', function() {
+  //alert($('input[name=display]:checked', '#displayOptions').val()); 
+  if (currItem) {
+    customDisplay(currItem);
+  }
+});
+
  $('#result').on('click', 'li', function() {
   var click_text = $(this).text().split('|');
   $('#search').val($.trim(click_text[1]));
   $("#result").html('');
-  var r = lookup[Number(click_text[0])]
+  currItem = lookup[Number(click_text[0])]
   //$('#item').html('<h3>'+r.name + '</h3>'+JSON.stringify(r, null, "<br/>")); //This dumps the raw json
-  $('#item').html('<h3>'+r.name + '</h3>'+ r.delve_text.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+  //$('#item').html('<h3>'+currItem.name + '</h3>'+ currItem.delve_text.replace(/(?:\r\n|\r|\n)/g, '<br/>'));
+  customDisplay(currItem);
  });
 });
