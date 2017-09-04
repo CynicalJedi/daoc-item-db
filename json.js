@@ -1,12 +1,10 @@
+var lookup = {};
 var metadata;
 var currItem;
 var mdjson= $.getJSON( "db/DAOC Item DB Metadata.json", function(data) {
   metadata = Object.assign(data);
-  console.log("metadata success");
+  //console.log("metadata success");
 })
-
-console.log(metadata);
-console.log("test");
 
 //Checks status of radio buttons and determines what display type to use
 function customDisplay(item) {
@@ -42,7 +40,6 @@ function showGameDelve(item) {
 function lookupMeta(item) {
   $.getJSON('db/DAOC Item DB Metadata.json', function(data) {
     $.each(data.items, function(key, value){
-	 //save.push(value);
 	 lookup[value.id] = value;
 	 //console.log(value.id)
    });   
@@ -52,7 +49,6 @@ function lookupMeta(item) {
     return item_string
 }
 
-//TODO -- This is NOT finished, more needs to be parsed and included from the JSON object
 //Returns an HTML table representing the item
 function prettyPrint(item) {
     var name = item.name;
@@ -105,23 +101,18 @@ function prettyPrint(item) {
     if (bonuses)
     {
       $.each(bonuses, function(key, value){
-        //console.log(key);
-        //console.log("TEST")
-       // console.log(metadata.bonus_types);
         var val = value.value;
         var type = value.type;
         var id = value.id;
-        console.log("Val: "+ val + " Type:" + type + " ID: "+ id);
+        //console.log("Val: "+ val + " Type:" + type + " ID: "+ id);
         //console.log(metadata.bonus_types[type]);
         //console.log(metadata.bonus_types[type].sub_types[id]);
-        //metadata.bonus_types[1].sub_types[0]
+
         if (type == 28 && id >= 0){
         var s = metadata.bonus_types[type].id[id];
-        console.log(s);
         }
         else if (id >= 0 ) {
         var s = metadata.bonus_types[type].sub_types[id];
-        console.log(s);
         }
         else {
           var s = "";
@@ -135,7 +126,6 @@ function prettyPrint(item) {
     }
 
     if (abilities) {
-      console.log("Abilities: "+ abilities);
       $.each(abilities, function(key, value){
         // "spell": 3464,
         // "position": 1,
@@ -145,8 +135,7 @@ function prettyPrint(item) {
         var charges = value.max_charges;
         var magicType = value.magic_type;
         var pos = value.position;
-        console.log(value);
-        console.log("Spell ID:" + spellID + " Charges:" + charges + " type:" + magicType);
+        //console.log("Spell ID:" + spellID + " Charges:" + charges + " type:" + magicType);
         if (spellID)
           {
             item_string = item_string + "\n" + metadata.abilities.magic_type[magicType] + ":" + metadata.abilities.spell[spellID];
@@ -181,9 +170,6 @@ function prettyPrint(item) {
     return item_string
 }
 
-//var save = new Array();
-var lookup = {};
-
 $(document).ready(function(){
  $.ajaxSetup({ cache: true });
  var timer;
@@ -191,7 +177,6 @@ $(document).ready(function(){
  //build list of all items and index based on item ID
    $.getJSON('db/daoc item database.json', function(data) {
    $.each(data.items, function(key, value){
-	 //save.push(value);
 	 lookup[value.id] = value;
 	 //console.log(value.id)
    });   
@@ -211,8 +196,6 @@ $(document).ready(function(){
     if (value.name.search(expression) != -1 || value.id == searchField)
     {
      $('#result').append('<li><span>'+value.id+' | ' +value.name+' | ' + metadata.realm[value.realm] + '</span></li>');
-	 //save.push(value);
-	 //lookup[value.id] = value;
     }
    });   
 
@@ -220,7 +203,6 @@ $(document).ready(function(){
 });
  
 $('#displayOptions input').on('change', function() {
-  //alert($('input[name=display]:checked', '#displayOptions').val()); 
   if (currItem) {
     customDisplay(currItem);
   }
@@ -231,8 +213,6 @@ $('#displayOptions input').on('change', function() {
   $('#search').val($.trim(click_text[1]));
   $("#result").html('');
   currItem = lookup[Number(click_text[0])]
-  //$('#item').html('<h3>'+r.name + '</h3>'+JSON.stringify(r, null, "<br/>")); //This dumps the raw json
-  //$('#item').html('<h3>'+currItem.name + '</h3>'+ currItem.delve_text.replace(/(?:\r\n|\r|\n)/g, '<br/>'));
   customDisplay(currItem);
  });
 
