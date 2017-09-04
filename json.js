@@ -35,19 +35,6 @@ function showCustomText(item) {
 function showGameDelve(item) {
   $('#item').html('<h3>'+item.name + '</h3>'+ item.delve_text.replace(/(?:\r\n|\r|\n)/g, '<br/>'));
   }
-  
-//Matches the metadata fields to a human readable string
-function lookupMeta(item) {
-  $.getJSON('db/DAOC Item DB Metadata.json', function(data) {
-    $.each(data.items, function(key, value){
-	 lookup[value.id] = value;
-	 //console.log(value.id)
-   });   
-  });
- 
-  
-    return item_string
-}
 
 //Returns an HTML table representing the item
 function prettyPrint(item) {
