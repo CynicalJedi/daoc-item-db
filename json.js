@@ -8,7 +8,6 @@ var mdjson= $.getJSON( "db/DAOC Item DB Metadata.json", function(data) {
 console.log(metadata);
 console.log("test");
 
-
 //Checks status of radio buttons and determines what display type to use
 function customDisplay(item) {
  // $('#item').html(
@@ -76,7 +75,7 @@ function prettyPrint(item) {
     }
 
     var bonuses = item.bonuses; // this has a sub type
-
+    var abilities = item.abilities; // List of /uses and item abilities
     var type_data = item.type_data; // has sub elements
     if(type_data)
     {
@@ -91,6 +90,8 @@ function prettyPrint(item) {
     var sources = item.sources; //has sub type
     var bonus_level = item.bonus_level;
     var delve_text = item.delve_text;
+
+    var requirements = item.requirements;
 
     //Table format
     //ID | Name | Realm | Category | Slot | Damage Type |
@@ -123,12 +124,59 @@ function prettyPrint(item) {
         console.log(s);
         }
         else {
-          var s = "unknown"
+          var s = "";
         }
-        item_string = item_string + "\n" + metadata.bonus_types[type].name +":" + s + ":" + val; 
+        item_string = item_string + "\n" + metadata.bonus_types[type].name ;
+        if (s){
+        item_string = item_string + ":"+ s ;
+        }
+        item_string = item_string + ":" + val; 
       });  
     }
-  
+
+    if (abilities) {
+      console.log("Abilities: "+ abilities);
+      $.each(abilities, function(key, value){
+        // "spell": 3464,
+        // "position": 1,
+        // "max_charges": 30,
+        // "magic_type": 6
+        var spellID = value.spell;
+        var charges = value.max_charges;
+        var magicType = value.magic_type;
+        var pos = value.position;
+        console.log(value);
+        console.log("Spell ID:" + spellID + " Charges:" + charges + " type:" + magicType);
+        if (spellID)
+          {
+            item_string = item_string + "\n" + metadata.abilities.magic_type[magicType] + ":" + metadata.abilities.spell[spellID];
+
+            if (charges) {
+              item_string = item_string + " Charges:" + charges + " Use:" + metadata.abilities.position[pos];
+            }
+          }
+      }); 
+    }
+
+    if (requirements)
+      {
+        if (requirements.level_required)
+          {
+            item_string = item_string + "\nRequired Level: " + requirements.level_required
+          }
+        
+          if (requirements.usable_by)
+            {
+              item_string = item_string + "\nUsable by: "
+              $.each(requirements.usable_by, function(key, value){
+                item_string = item_string + metadata.requirements.usable_by[value] + " ";
+              }); 
+            }
+      }
+
+    if (bonus_level && !requirements.level) {
+      item_string = item_string + "\nBonus Level:" + bonus_level;
+    }
     return item_string
 }
 
@@ -147,7 +195,7 @@ $(document).ready(function(){
 	 //console.log(value.id)
    });   
   });
- 
+
  $('#search').keyup(function(){
    clearTimeout(timer);
    var ms = 300; // milliseconds
@@ -186,4 +234,5 @@ $('#displayOptions input').on('change', function() {
   //$('#item').html('<h3>'+currItem.name + '</h3>'+ currItem.delve_text.replace(/(?:\r\n|\r|\n)/g, '<br/>'));
   customDisplay(currItem);
  });
+
 });
