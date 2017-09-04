@@ -182,13 +182,16 @@ $(document).ready(function(){
    });   
   });
 
- $('#search').keyup(function(){
+ $('#search').keyup(function(e){
+  if(e.which == 13) {
+    return; //Dont do anything if the key was Enter, Enter handling is below
+  }
+
    clearTimeout(timer);
    var ms = 300; // milliseconds
    var val = this.value;
    timer = setTimeout(function() {
   $('#result').html('');
-  $('#state').val('');
   var searchField = $('#search').val();
   var expression = new RegExp(searchField, "i");
 
@@ -201,7 +204,29 @@ $(document).ready(function(){
 
  }, ms);
 });
- 
+
+$('#search').keypress(function(e) {
+  if(e.which == 13) {
+      var searchField = $('#search').val();
+      var expression = new RegExp(searchField, "i");
+      var ctr = 0;
+      var last;
+       $.each(lookup, function(key, value){
+        if (value.name.search(expression) != -1 || value.id == searchField)
+        {
+          ctr++;
+          last = value.id;
+        }
+       });
+      if (ctr == 1) {
+        currItem = lookup[Number(last)];
+        customDisplay(currItem);
+        $('#search').val($.trim(currItem.name));
+        $("#result").html('');
+      }
+  }
+});
+
 $('#displayOptions input').on('change', function() {
   if (currItem) {
     customDisplay(currItem);
