@@ -157,12 +157,13 @@ function prettyPrint(item) {
           }
       }); 
     }
-
+    var hasReq = false;
     if (requirements)
       {
         if (requirements.level_required)
           {
             item_string = item_string + "\nRequired Level: " + requirements.level_required
+            hasReq = true;
           }
         
           if (requirements.usable_by)
@@ -174,7 +175,7 @@ function prettyPrint(item) {
             }
       }
 
-    if (bonus_level && !requirements.level) {
+    if (bonus_level && !hasReq) {
       item_string = item_string + "\nBonus Level:" + bonus_level;
     }
     return item_string
