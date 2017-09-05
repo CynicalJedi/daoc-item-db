@@ -36,7 +36,7 @@ function showGameDelve(item) {
   $('#item').html('<h3>'+item.name + '</h3>'+ item.delve_text.replace(/(?:\r\n|\r|\n)/g, '<br/>'));
   }
 
-//Returns an HTML table representing the item
+//Returns a string representing the item
 function prettyPrint(item) {
     var name = item.name;
     var id = item.id;
@@ -60,16 +60,7 @@ function prettyPrint(item) {
     var bonuses = item.bonuses; // this has a sub type
     var abilities = item.abilities; // List of /uses and item abilities
     var type_data = item.type_data; // has sub elements
-    if(type_data)
-    {
-    var dps = type_data.dps;
-    var clamped_dps = type_data.clamped_dps;
-    var speed = type_data.speed;
-    var damage_type = type_data.damage_type;
-    var base_quality = type_data.base_quality;
-    var two_handed = type_data.two_handed;
-    var left_handed = type_data.left_handed;
-    }
+
     var sources = item.sources; //has sub type
     var bonus_level = item.bonus_level;
     var delve_text = item.delve_text;
@@ -83,6 +74,89 @@ function prettyPrint(item) {
     if (slot)
     {
       item_string = item_string + "\nSlot:" + metadata.slot[slot]
+    }
+
+    var hasReq = false;
+    if (requirements)
+      {
+        if (requirements.level_required)
+          {
+            item_string = item_string + "\nRequired Level: " + requirements.level_required
+            hasReq = true;
+          }
+
+          if (requirements.champion_level_required)
+            {
+              item_string = item_string + "\n Required Champion Level: " + requirements.champion_level_required
+              hasReq = true;
+            }
+        
+          if (requirements.usable_by)
+            {
+              item_string = item_string + "\nUsable by: "
+              $.each(requirements.usable_by, function(key, value){
+                item_string = item_string + metadata.requirements.usable_by[value] + " ";
+              }); 
+            }
+      }
+
+    if(type_data) {
+      var dps = type_data.dps;
+      var clamped_dps = type_data.clamped_dps;
+      var speed = type_data.speed;
+      var damage_type = type_data.damage_type;
+      var base_quality = type_data.base_quality;
+      var two_handed = type_data.two_handed;
+      var left_handed = type_data.left_handed;
+      var shield_size = type_data.shield_size;
+      var armor_factor = type_data.armor_factor
+      var clamped_armor_factor = type_data.clamped_armor_factor
+      var absorption = type_data.absorption
+
+      if (dps) {
+        item_string = item_string + "\nDPS: " + dps;
+      }
+
+      if (clamped_dps) {
+        item_string = item_string + "\nClamped DPS: " + clamped_dps ;
+      }
+
+      if (speed) {
+        item_string = item_string + "\nSpeed: " + speed;
+      }
+
+      if (damage_type) {
+        item_string = item_string + "\n Damage Type: " + metadata.damage_type[damage_type];
+      }
+
+      if (armor_factor) {
+        item_string = item_string + "\n Armor Factor: " + armor_factor;
+      }
+
+      if (clamped_armor_factor) {
+        item_string = item_string + "\n Clamped Armor Factor: " + clamped_armor_factor;
+      }
+
+      if (absorption) {
+        item_string = item_string + "\nArmor Type: " + metadata.absorption[absorption] + " (" + absorption +" ABS)";
+      }
+
+      if (base_quality) {
+        item_string = item_string + "\nQuality:" + base_quality;
+      }
+
+      if (shield_size) {
+          item_string = item_string + "\n" + metadata.shield_size[shield_size] + " Shield";
+        }
+
+      if (two_handed) {
+        item_string = item_string + "\nTwo Handed Weapon";
+      }
+
+      if (left_handed) {
+        item_string = item_string + "\nEquiptable in Left Hand";
+      }
+
     }
 
     if (bonuses)
@@ -133,23 +207,6 @@ function prettyPrint(item) {
           }
       }); 
     }
-    var hasReq = false;
-    if (requirements)
-      {
-        if (requirements.level_required)
-          {
-            item_string = item_string + "\nRequired Level: " + requirements.level_required
-            hasReq = true;
-          }
-        
-          if (requirements.usable_by)
-            {
-              item_string = item_string + "\nUsable by: "
-              $.each(requirements.usable_by, function(key, value){
-                item_string = item_string + metadata.requirements.usable_by[value] + " ";
-              }); 
-            }
-      }
 
     if (bonus_level && !hasReq) {
       item_string = item_string + "\nBonus Level:" + bonus_level;
@@ -171,7 +228,7 @@ $(document).ready(function(){
 
  $('#search').keyup(function(e){
   if(e.which == 13) {
-    return; //Dont do anything if the key was Enter, Enter handling is below
+    return; //Dont do anything if the key was Enter, Enter handling is below in the keypress function
   }
 
    clearTimeout(timer);
