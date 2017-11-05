@@ -219,7 +219,7 @@ $(document).ready(function(){
  var timer;
  
  //build list of all items and index based on item ID
-   $.getJSON('db/daoc item database.json', function(data) {
+   $.getJSON('db/static_objects.json', function(data) {
    $.each(data.items, function(key, value){
 	 lookup[value.id] = value;
 	 //console.log(value.id)
@@ -260,6 +260,7 @@ $('#search').keypress(function(e) {
         {
           ctr++;
           last = value.id;
+          //$('#result').append('<li><span>'+value.id+' | ' +value.name+' | ' + metadata.realm[value.realm] + '</span></li>');
         }
        });
       if (ctr == 1) {
